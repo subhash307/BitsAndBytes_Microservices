@@ -1,0 +1,153 @@
+{
+	"info": {
+		"_postman_id": "6265a5b5-39fa-4e90-ab7a-0d4f6b47abb8",
+		"name": "order-service",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "5350596",
+		"_collection_link": "https://interstellar-rocket-345541.postman.co/workspace/Team-Workspace~3f494e70-442f-4425-8c4b-d99c8ea5b4c8/collection/5350596-6265a5b5-39fa-4e90-ab7a-0d4f6b47abb8?action=share&source=collection_link&creator=5350596"
+	},
+	"item": [
+		{
+			"name": "Create Order - localhost:6001/orders",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"customerId\": \"cust-1234\",\r\n  \"items\": [\r\n    {\r\n      \"productId\": \"prod-00001\",\r\n      \"quantity\": 2\r\n    }\r\n    \r\n  ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:6001/orders",
+					"host": [
+						"localhost"
+					],
+					"port": "6001",
+					"path": [
+						"orders"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Order by Id - localhost:6001/orders/ord-0d2c6583",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:6001/orders/ord-0d2c6583",
+					"host": [
+						"localhost"
+					],
+					"port": "6001",
+					"path": [
+						"orders",
+						"ord-0d2c6583"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Orders by customer Id - localhost:6001/orders/customer/cust-1234",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:6001/orders/customer/cust-1234",
+					"host": [
+						"localhost"
+					],
+					"port": "6001",
+					"path": [
+						"orders",
+						"customer",
+						"cust-1234"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Order Status - localhost:6001/orders/ord-0d2c6583/status?status=CONFIRMED",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "PATCH",
+				"header": [],
+				"url": {
+					"raw": "localhost:6001/orders/ord-0d2c6583/status?status=CONFIRMED",
+					"host": [
+						"localhost"
+					],
+					"port": "6001",
+					"path": [
+						"orders",
+						"ord-0d2c6583",
+						"status"
+					],
+					"query": [
+						{
+							"key": "status",
+							"value": "CONFIRMED"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:6001/customer/cust-1234",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:6001/customer/cust-1234",
+					"host": [
+						"localhost"
+					],
+					"port": "6001",
+					"path": [
+						"customer",
+						"cust-1234"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:6000/categories/cat-00001",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "localhost:6000/categories/cat-00001",
+					"host": [
+						"localhost"
+					],
+					"port": "6000",
+					"path": [
+						"categories",
+						"cat-00001"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

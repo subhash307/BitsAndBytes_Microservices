@@ -1,0 +1,184 @@
+{
+	"info": {
+		"_postman_id": "dd90cf1b-03d1-415f-b5c2-805e822586c6",
+		"name": "product-service",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "5350596",
+		"_collection_link": "https://interstellar-rocket-345541.postman.co/workspace/Team-Workspace~3f494e70-442f-4425-8c4b-d99c8ea5b4c8/collection/5350596-dd90cf1b-03d1-415f-b5c2-805e822586c6?action=share&source=collection_link&creator=5350596"
+	},
+	"item": [
+		{
+			"name": "Create Category - localhost:6000/categories",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": " {\r\n         \"name\": \"Clothing\",\r\n         \"description\": \"This category is only related to clothing.\"\r\n\r\n     }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:6000/categories",
+					"host": [
+						"localhost"
+					],
+					"port": "6000",
+					"path": [
+						"categories"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Product - localhost:6000/products",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": " {\r\n         \"name\": \"T-Shirt\",\r\n         \"description\": \"Polo T-Shirt\",\r\n         \"price\": 50.0,\r\n         \"stockQuantity\": 15,\r\n         \"categoryId\": \"cat-00001\"\r\n     }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:6000/products",
+					"host": [
+						"localhost"
+					],
+					"port": "6000",
+					"path": [
+						"products"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET All Product - localhost:6000/products",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:6000/products/prod-00001",
+					"host": [
+						"localhost"
+					],
+					"port": "6000",
+					"path": [
+						"products",
+						"prod-00001"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get All Categories - localhost:6000/categories",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:6000/categories",
+					"host": [
+						"localhost"
+					],
+					"port": "6000",
+					"path": [
+						"categories"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Category by Id - localhost:6000/categories",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:6000/categories/cat-00001",
+					"host": [
+						"localhost"
+					],
+					"port": "6000",
+					"path": [
+						"categories",
+						"cat-00001"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update stockQuantity - localhost:6000/products/prod-00001/stock?stockQuantity=10",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "PATCH",
+				"header": [],
+				"url": {
+					"raw": "localhost:6000/products/prod-00001/stock?stockQuantity=1",
+					"host": [
+						"localhost"
+					],
+					"port": "6000",
+					"path": [
+						"products",
+						"prod-00001",
+						"stock"
+					],
+					"query": [
+						{
+							"key": "stockQuantity",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete product by Id - localhost:6000/products/prod-00001",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "localhost:6000/products/prod-00002",
+					"host": [
+						"localhost"
+					],
+					"port": "6000",
+					"path": [
+						"products",
+						"prod-00002"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
