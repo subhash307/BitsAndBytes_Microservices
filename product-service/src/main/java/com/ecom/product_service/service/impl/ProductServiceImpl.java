@@ -51,7 +51,7 @@ public class ProductServiceImpl implements ProductService {
     public ProductResponseDto updateStock(String productId, Integer stockQuantity) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
-        product.setStockQuantity(stockQuantity);
+        product.setStockQuantity(product.getStockQuantity() + stockQuantity);
         productRepository.save(product);
         return convertToDto(product);
 
