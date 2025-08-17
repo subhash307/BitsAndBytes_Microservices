@@ -10,17 +10,17 @@ public class ProductClient {
 
     private final RestTemplate restTemplate;
 
-    public ProductClient(RestTemplateBuilder builder) {
-        this.restTemplate = builder.build();
+    public ProductClient(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
     }
 
     public ProductResponseDTO getProductName(String productId) {
-        String url = "http://localhost:6000/products/" + productId;
+        String url = "http://product-service/products/" + productId;
         return restTemplate.getForObject(url, ProductResponseDTO.class);
     }
 
     public void updateStock(String productId, int quantity) {
-        String url = "http://localhost:6000/products/" + productId + "/stock?stockQuantity="+ quantity;
+        String url = "http://product-service/products/" + productId + "/stock?stockQuantity="+ quantity;
         restTemplate.patchForObject(url, null, Void.class);
     }
 

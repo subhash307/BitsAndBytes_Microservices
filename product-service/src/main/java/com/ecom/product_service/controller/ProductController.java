@@ -4,6 +4,7 @@ package com.ecom.product_service.controller;
 import com.ecom.product_service.dto.ProductRequestDto;
 import com.ecom.product_service.dto.ProductResponseDto;
 import com.ecom.product_service.service.ProductService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -38,5 +39,6 @@ public class ProductController {
         return productService.deleteProduct(productId);
 
     }
+
 }
 
