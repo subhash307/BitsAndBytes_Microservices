@@ -3,6 +3,7 @@ package com.ecom.payment_service.controller;
 import com.ecom.payment_service.dto.PaymentRequestDTO;
 import com.ecom.payment_service.dto.PaymentResponseDTO;
 import com.ecom.payment_service.service.PaymentService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,7 +18,7 @@ public class PaymentController {
     }
 
     @PostMapping
-    public ResponseEntity<PaymentResponseDTO> processPayment(@RequestBody PaymentRequestDTO paymentRequestDTO) {
+    public ResponseEntity<PaymentResponseDTO> processPayment(@RequestBody PaymentRequestDTO paymentRequestDTO) throws JsonProcessingException {
         return ResponseEntity.ok(paymentService.processPayment(paymentRequestDTO));
     }
 

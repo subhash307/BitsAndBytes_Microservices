@@ -3,8 +3,14 @@ package com.ecom.order_service.service;
 import com.ecom.order_service.dto.*;
 import com.ecom.order_service.entity.Orders;
 import com.ecom.order_service.entity.OrderItem;
+import com.ecom.order_service.event.OrderCreatedEvent;
 import com.ecom.order_service.repository.OrderItemRepository;
 import com.ecom.order_service.repository.OrderRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -12,18 +18,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
+@RequiredArgsConstructor
 public class OrderService {
-
-    private OrderRepository orderRepository;
-    private OrderItemRepository orderItemRepository;
-    private ProductClient productClient;
-
-    public OrderService(OrderRepository orderRepository, OrderItemRepository orderItemRepository, ProductClient productClient) {
-        this.orderRepository = orderRepository;
-        this.orderItemRepository = orderItemRepository;
-        this.productClient = productClient;
-    }
+    private final OrderRepository orderRepository;
+    private final OrderItemRepository orderItemRepository;
+    private final ProductClient productClient;
+    private final KafkaTemplate<String, String> kafkaTemplate;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public OrderResponseDTO placeOrder(OrderRequestDTO requestDTO) {
 
@@ -51,9 +54,13 @@ public class OrderService {
                 LocalDateTime.now(), totalAmount, OrderStatus.PENDING);
         orderRepository.save(order);
         orderItemRepository.saveAll(orderItems);
-
-        return new OrderResponseDTO(order.getOrderId(), order.getCustomerId(),
+        OrderResponseDTO response =new OrderResponseDTO(order.getOrderId(), order.getCustomerId(),
                 order.getOrderDate(), order.getTotalAmount(), order.getStatus(), orderItems);
+
+        // Kafka Event
+        placeOrder(order);
+        //---------------
+        return response;
     }
 
     public OrderResponseDTO getOrderById(String orderId) {
@@ -85,6 +92,23 @@ public class OrderService {
         orderRepository.save(order);
     }
 
+    public void placeOrder(Orders order) {
+        try {
+            OrderCreatedEvent event = new OrderCreatedEvent(
+                    order.getOrderId(),
+                    order.getCustomerId(),
+                    order.getTotalAmount()
+            );
+
+            String eventJson = objectMapper.writeValueAsString(event);
+            log.info("Sending OrderCreatedEvent to Kafka for Order ID: {}", order.getOrderId());
+            kafkaTemplate.send("order-events", eventJson);
+            log.info("OrderCreatedEvent sent to Kafka for Order ID: {}", order.getOrderId());
+        } catch (JsonProcessingException e) {
+            log.error("Error serializing OrderCreatedEvent", e);
+            throw new RuntimeException("Error processing order", e);
+        }
+    }
 
     private String generateOrderId() {
         return "ord-" + UUID.randomUUID().toString().substring(0, 8);

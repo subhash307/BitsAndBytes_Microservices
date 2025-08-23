@@ -4,7 +4,12 @@ import com.ecom.payment_service.dto.PaymentRequestDTO;
 import com.ecom.payment_service.dto.PaymentResponseDTO;
 import com.ecom.payment_service.dto.PaymentStatus;
 import com.ecom.payment_service.entity.Payment;
+import com.ecom.payment_service.event.PaymentCompletedEvent;
 import com.ecom.payment_service.repository.PaymentRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -12,17 +17,22 @@ import java.util.Random;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class PaymentService {
 
-    private PaymentRepository paymentRepository;
-    private OrderClient orderClient;
+    private final PaymentRepository paymentRepository;
+    private final OrderClient orderClient;
+    private final KafkaTemplate<String, String> kafkaTemplate;
+    private final ObjectMapper objectMapper = new ObjectMapper();
+//
+//    public PaymentService(PaymentRepository paymentRepository, OrderClient orderClient, KafkaTemplate<String, PaymentCompletedEvent> kafkaTemplate) {
+//        this.paymentRepository = paymentRepository;
+//        this.orderClient = orderClient;
+//        this.kafkaTemplate = kafkaTemplate;
+//
+//    }
 
-    public PaymentService(PaymentRepository paymentRepository, OrderClient orderClient) {
-        this.paymentRepository = paymentRepository;
-        this.orderClient = orderClient;
-    }
-
-    public PaymentResponseDTO processPayment(PaymentRequestDTO paymentRequestDTO) {
+    public PaymentResponseDTO processPayment(PaymentRequestDTO paymentRequestDTO) throws JsonProcessingException {
         String paymentId = generatePaymentId();
         Payment payment = new Payment();
         payment.setPaymentId(paymentId);
@@ -34,13 +44,14 @@ public class PaymentService {
         if( paymentSuccess ) {
             payment.setPaymentStatus(PaymentStatus.SUCCESS);
             payment.setTransactionId(UUID.randomUUID().toString());
-            orderClient.updateOrderStatus(paymentRequestDTO.getOrderId(), "CONFIRMED");
+//            orderClient.updateOrderStatus(paymentRequestDTO.getOrderId(), "CONFIRMED");
         } else {
             payment.setPaymentStatus(PaymentStatus.FAILED);
             payment.setTransactionId("N/A");
-            orderClient.updateOrderStatus(paymentRequestDTO.getOrderId(), "CANCELLED");
+//            orderClient.updateOrderStatus(paymentRequestDTO.getOrderId(), "CANCELLED");
         }
         paymentRepository.save(payment);
+        updatePaymentStatus(payment, payment.getPaymentStatus().name()); // Notify order service
         PaymentResponseDTO paymentResponseDTO = new PaymentResponseDTO();
         paymentResponseDTO.setPaymentId(paymentId);
         paymentResponseDTO.setOrderId(payment.getOrderId());
@@ -65,6 +76,20 @@ public class PaymentService {
         paymentResponseDTO.setPaymentStatus(payment.getPaymentStatus());
         paymentResponseDTO.setTransactionId(payment.getTransactionId());
         return paymentResponseDTO;
+    }
+
+    public void updatePaymentStatus(Payment payment, String status) throws JsonProcessingException {
+        // After payment, publish PaymentCompletedEvent
+        PaymentCompletedEvent completedEvent = new PaymentCompletedEvent(
+                payment.getPaymentId(),
+                payment.getOrderId(),
+                payment.getCustomerId(),
+                payment.getAmount(),
+                status,
+                payment.getTransactionId()
+        );
+        String eventJson = objectMapper.writeValueAsString(completedEvent);
+        kafkaTemplate.send("payment-events", eventJson);
     }
     private String generatePaymentId() {
         return "pay-" + UUID.randomUUID().toString().substring(0, 8);
